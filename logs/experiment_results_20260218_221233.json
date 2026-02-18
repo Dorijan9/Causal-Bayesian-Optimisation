@@ -1,0 +1,199 @@
+{
+  "timestamp": "20260218_221233",
+  "config": {
+    "random_seed": 42,
+    "scm": {
+      "noise_variance": 0.3,
+      "weights": {
+        "w_ED": 0.75,
+        "w_DA": 0.8,
+        "w_AB": 0.7,
+        "w_BC": 0.6,
+        "w_DC": -0.5
+      },
+      "root_variance": 1.0,
+      "intervention_value": 2.0,
+      "n_observational_samples": 200,
+      "n_interventional_samples_per_iter": 50
+    },
+    "prior": {
+      "temperature_tau": 3.0
+    },
+    "cbo": {
+      "max_iterations": 4,
+      "convergence_threshold": 0.95,
+      "acquisition_function": "expected_information_gain",
+      "n_eig_simulations": 200
+    },
+    "baselines": {
+      "uniform_prior": {
+        "enabled": true
+      },
+      "random_intervention": {
+        "enabled": true,
+        "n_repeats": 50
+      },
+      "observational_only": {
+        "enabled": true
+      },
+      "single_shot_llm": {
+        "enabled": true
+      }
+    },
+    "evaluation": {
+      "metrics": [
+        "structural_hamming_distance",
+        "posterior_concentration",
+        "entropy_reduction",
+        "edge_precision",
+        "edge_recall",
+        "edge_f1"
+      ],
+      "n_experiment_repeats": 100
+    },
+    "output": {
+      "log_dir": "logs/",
+      "plot_dir": "plots/"
+    }
+  },
+  "main_cbo": {
+    "iterations": [
+      {
+        "iteration": 1,
+        "target_variable": "E",
+        "eig_scores": {
+          "A": 1.042002945917175,
+          "B": 1.0591601503041372,
+          "C": 0.5813330773579771,
+          "D": 1.538512837867892,
+          "E": 1.5414537678344553
+        },
+        "belief_before": [
+          0.3011467279010438,
+          0.25919939077873505,
+          0.19201963147848775,
+          0.14225164172785248,
+          0.10538260811388087
+        ],
+        "belief_after": [
+          0.9999999999991913,
+          8.08759306179527e-13,
+          7.195470352469187e-35,
+          3.4192981289402465e-36,
+          7.601996100460708e-98
+        ],
+        "entropy_before": 1.5427868774950564,
+        "entropy_after": 2.3327194256107862e-11,
+        "map_graph": "G1",
+        "map_probability": 0.9999999999991913,
+        "shd": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "converged": "True"
+      }
+    ],
+    "initial_belief": [
+      0.3011467279010438,
+      0.25919939077873505,
+      0.19201963147848775,
+      0.14225164172785248,
+      0.10538260811388087
+    ],
+    "initial_entropy": 1.5427868774950564,
+    "final": {
+      "map_graph": "G1",
+      "map_probability": 0.9999999999991913,
+      "final_entropy": 2.3327194256107862e-11,
+      "entropy_reduction": 1.5427868774717293,
+      "total_iterations": 1,
+      "converged": "True",
+      "shd": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "true_positives": 5,
+      "false_positives": 0,
+      "false_negatives": 0
+    }
+  },
+  "baseline_uniform_prior": {
+    "iterations": [
+      {
+        "iteration": 1,
+        "target_variable": "E",
+        "eig_scores": {
+          "A": 1.0412315768549951,
+          "B": 1.0676024302315903,
+          "C": 0.6186899106781317,
+          "D": 1.605219984456702,
+          "E": 1.6079361158139154
+        },
+        "belief_before": [
+          0.2,
+          0.2,
+          0.2,
+          0.2,
+          0.2
+        ],
+        "belief_after": [
+          0.9999999999990603,
+          9.396442560444247e-13,
+          1.128474383410906e-34,
+          7.238654195769242e-36,
+          2.1723852655990755e-97
+        ],
+        "entropy_before": 1.6094379124341005,
+        "entropy_after": 2.696151959259214e-11,
+        "map_graph": "G1",
+        "map_probability": 0.9999999999990603,
+        "shd": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "converged": "True"
+      }
+    ],
+    "initial_belief": [
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2
+    ],
+    "initial_entropy": 1.6094379124341005,
+    "final": {
+      "map_graph": "G1",
+      "map_probability": 0.9999999999990603,
+      "final_entropy": 2.696151959259214e-11,
+      "entropy_reduction": 1.609437912407139,
+      "total_iterations": 1,
+      "converged": "True",
+      "shd": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "true_positives": 5,
+      "false_positives": 0,
+      "false_negatives": 0
+    }
+  },
+  "baseline_random_intervention": {
+    "n_repeats": 50,
+    "mean_shd": 0.0,
+    "std_shd": 0.0,
+    "mean_f1": 1.0,
+    "correct_recovery_rate": 1.0
+  },
+  "baseline_single_shot_llm": {
+    "map_graph": "G1",
+    "map_probability": 0.3011467279010438,
+    "shd": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "true_positives": 5,
+    "false_positives": 0,
+    "false_negatives": 0
+  }
+}

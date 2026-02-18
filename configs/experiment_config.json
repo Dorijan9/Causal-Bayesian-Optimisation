@@ -1,0 +1,56 @@
+{
+  "random_seed": 42,
+  "scm": {
+    "noise_variance": 0.3,
+    "weights": {
+      "w_ED": 0.75,
+      "w_DA": 0.8,
+      "w_AB": 0.7,
+      "w_BC": 0.6,
+      "w_DC": -0.5
+    },
+    "root_variance": 1.0,
+    "intervention_value": 2.0,
+    "n_observational_samples": 200,
+    "n_interventional_samples_per_iter": 50
+  },
+  "prior": {
+    "temperature_tau": 3.0
+  },
+  "cbo": {
+    "max_iterations": 4,
+    "convergence_threshold": 0.95,
+    "acquisition_function": "expected_information_gain",
+    "n_eig_simulations": 200
+  },
+  "baselines": {
+    "uniform_prior": {
+      "enabled": true
+    },
+    "random_intervention": {
+      "enabled": true,
+      "n_repeats": 50
+    },
+    "observational_only": {
+      "enabled": true
+    },
+    "single_shot_llm": {
+      "enabled": true
+    }
+  },
+  "evaluation": {
+    "metrics": [
+      "structural_hamming_distance",
+      "posterior_concentration",
+      "entropy_reduction",
+      "edge_precision",
+      "edge_recall",
+      "edge_f1"
+    ],
+    "n_experiment_repeats": 100
+  },
+  "output": {
+    "log_dir": "logs/",
+    "plot_dir": "plots/"
+  }
+}
