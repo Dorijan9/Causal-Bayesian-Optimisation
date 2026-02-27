@@ -1,0 +1,325 @@
+{
+  "description": "Candidate causal DAGs proposed by LLM",
+  "variable_order": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+  ],
+  "candidates": [
+    {
+      "id": "G1",
+      "confidence": 0.7,
+      "description": "Correct: E->D->A->B->C, D->C",
+      "edges": [
+        {
+          "source": "E",
+          "target": "D"
+        },
+        {
+          "source": "D",
+          "target": "A"
+        },
+        {
+          "source": "D",
+          "target": "C"
+        },
+        {
+          "source": "A",
+          "target": "B"
+        },
+        {
+          "source": "B",
+          "target": "C"
+        }
+      ],
+      "adjacency_matrix": [
+        [
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      ],
+      "rationale": "HIF-1 activated by PI3K/Akt/mTOR drives glycolytic reprogramming and suppresses OXPHOS. Standard metabolic cascade."
+    },
+    {
+      "id": "G2",
+      "confidence": 0.65,
+      "description": "Missing D->C inhibitory edge",
+      "edges": [
+        {
+          "source": "E",
+          "target": "D"
+        },
+        {
+          "source": "D",
+          "target": "A"
+        },
+        {
+          "source": "A",
+          "target": "B"
+        },
+        {
+          "source": "B",
+          "target": "C"
+        }
+      ],
+      "adjacency_matrix": [
+        [
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      ],
+      "rationale": "Same as G1 but HIF-1 only upregulates glycolysis without directly affecting OXPHOS."
+    },
+    {
+      "id": "G3",
+      "confidence": 0.55,
+      "description": "Reversed metabolic chain C->B->A",
+      "edges": [
+        {
+          "source": "E",
+          "target": "D"
+        },
+        {
+          "source": "D",
+          "target": "A"
+        },
+        {
+          "source": "C",
+          "target": "B"
+        },
+        {
+          "source": "B",
+          "target": "A"
+        }
+      ],
+      "adjacency_matrix": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ]
+      ],
+      "rationale": "ATP/ADP from OXPHOS regulates TCA allosterically; TCA intermediates regulate glycolysis. Demand drives supply."
+    },
+    {
+      "id": "G4",
+      "confidence": 0.45,
+      "description": "Reversed PI3K-HIF edge: D->E",
+      "edges": [
+        {
+          "source": "D",
+          "target": "E"
+        },
+        {
+          "source": "D",
+          "target": "A"
+        },
+        {
+          "source": "D",
+          "target": "C"
+        },
+        {
+          "source": "A",
+          "target": "B"
+        },
+        {
+          "source": "B",
+          "target": "C"
+        }
+      ],
+      "adjacency_matrix": [
+        [
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "rationale": "HIF-1 is root cause (driven by hypoxia), activates PI3K/Akt as survival response."
+    },
+    {
+      "id": "G5",
+      "confidence": 0.35,
+      "description": "Linear chain E->A->B->C->D, no fork",
+      "edges": [
+        {
+          "source": "E",
+          "target": "A"
+        },
+        {
+          "source": "A",
+          "target": "B"
+        },
+        {
+          "source": "B",
+          "target": "C"
+        },
+        {
+          "source": "C",
+          "target": "D"
+        }
+      ],
+      "adjacency_matrix": [
+        [
+          0,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "rationale": "PI3K directly stimulates glycolysis; glycolysis->TCA->OXPHOS; ROS from OXPHOS stabilises HIF-1alpha."
+    }
+  ]
+}

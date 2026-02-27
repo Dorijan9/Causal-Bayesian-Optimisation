@@ -1,0 +1,130 @@
+{
+  "description": "Ground-truth causal DAG derived from KEGG pathway cross-references",
+  "variables": {
+    "A": {
+      "name": "Glycolytic flux",
+      "kegg_id": "hsa00010",
+      "kegg_name": "Glycolysis / Gluconeogenesis"
+    },
+    "B": {
+      "name": "TCA cycle activity",
+      "kegg_id": "hsa00020",
+      "kegg_name": "Citrate cycle (TCA cycle)"
+    },
+    "C": {
+      "name": "Oxidative phosphorylation",
+      "kegg_id": "hsa00190",
+      "kegg_name": "Oxidative phosphorylation"
+    },
+    "D": {
+      "name": "HIF-1 signalling activation",
+      "kegg_id": "hsa04066",
+      "kegg_name": "HIF-1 signaling pathway"
+    },
+    "E": {
+      "name": "PI3K-Akt signalling",
+      "kegg_id": "hsa04151",
+      "kegg_name": "PI3K-Akt signaling pathway"
+    }
+  },
+  "topological_order": [
+    "E",
+    "D",
+    "A",
+    "B",
+    "C"
+  ],
+  "edges": [
+    {
+      "source": "A",
+      "target": "B",
+      "weight": 0.7,
+      "sign": "excitatory",
+      "kegg_evidence": "Glycolysis (hsa00010) produces pyruvate->acetyl-CoA, input to TCA (hsa00020). KEGG related pathway."
+    },
+    {
+      "source": "B",
+      "target": "C",
+      "weight": 0.6,
+      "sign": "excitatory",
+      "kegg_evidence": "TCA (hsa00020) generates NADH/FADH2 feeding OXPHOS (hsa00190). KEGG related pathway."
+    },
+    {
+      "source": "D",
+      "target": "A",
+      "weight": 0.8,
+      "sign": "excitatory",
+      "kegg_evidence": "HIF-1 (hsa04066) upregulates glycolytic enzymes HK2,PFK,LDHA in hsa00010. Explicit KEGG cross-ref."
+    },
+    {
+      "source": "D",
+      "target": "C",
+      "weight": -0.5,
+      "sign": "inhibitory",
+      "kegg_evidence": "HIF-1 (hsa04066) suppresses OXPHOS (hsa00190) via PDK1, BNIP3 mitophagy, COX downregulation."
+    },
+    {
+      "source": "E",
+      "target": "D",
+      "weight": 0.75,
+      "sign": "excitatory",
+      "kegg_evidence": "PI3K-Akt (hsa04151) activates HIF-1alpha via mTOR. Explicit upstream in KEGG hsa04066 map."
+    }
+  ],
+  "adjacency_matrix": {
+    "order": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "matrix": [
+      [
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0
+      ]
+    ]
+  },
+  "scm_parameters": {
+    "noise_variance": 0.3,
+    "weights": {
+      "w_AB": 0.7,
+      "w_BC": 0.6,
+      "w_DA": 0.8,
+      "w_DC": -0.5,
+      "w_ED": 0.75
+    }
+  }
+}
