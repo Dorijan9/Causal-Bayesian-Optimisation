@@ -109,6 +109,73 @@ def plot_eig_heatmap(results: dict, save_path: str = "plots/eig_heatmap.png"):
     print(f"Saved: {save_path}")
 
 
+def plot_weight_posteriors(results: dict, true_weights: dict = None,
+                          save_path: str = "plots/weight_posteriors.png"):
+    """Plot how weight posterior means evolve across iterations with 95% CIs."""
+    iterations = results["iterations"]
+
+    if true_weights is None:
+        true_weights = {
+            "w_ED": 0.75, "w_DA": 0.80, "w_AB": 0.70,
+            "w_BC": 0.60, "w_DC": -0.50,
+        }
+
+    # Collect all edge keys
+    all_edges = set()
+    for it in iterations:
+        if "weight_posteriors" in it:
+            all_edges.update(it["weight_posteriors"].keys())
+    edges = sorted(all_edges)
+
+    if not edges:
+        print("No weight posterior data found.")
+        return
+
+    fig, axes = plt.subplots(len(edges), 1, figsize=(10, 3 * len(edges)), sharex=True)
+    if len(edges) == 1:
+        axes = [axes]
+
+    x = list(range(1, len(iterations) + 1))
+
+    for ax, edge in zip(axes, edges):
+        means = []
+        lowers = []
+        uppers = []
+        for it in iterations:
+            wp = it.get("weight_posteriors", {}).get(edge)
+            if wp:
+                means.append(wp["mean"])
+                lowers.append(wp["lower_95"])
+                uppers.append(wp["upper_95"])
+            else:
+                means.append(np.nan)
+                lowers.append(np.nan)
+                uppers.append(np.nan)
+
+        ax.plot(x, means, "o-", color="#2E86C1", linewidth=2, markersize=8, label="Posterior mean")
+        ax.fill_between(x, lowers, uppers, alpha=0.2, color="#2E86C1", label="95% CI")
+
+        # True weight
+        if edge in true_weights:
+            ax.axhline(true_weights[edge], color="#E74C3C", linestyle="--",
+                       linewidth=1.5, label=f"True: {true_weights[edge]}")
+
+        # Zero line (prior mean)
+        ax.axhline(0, color="gray", linestyle=":", linewidth=1, alpha=0.5)
+
+        ax.set_ylabel(edge, fontsize=12, fontweight="bold")
+        ax.legend(fontsize=9, loc="best")
+        ax.grid(True, alpha=0.3)
+
+    axes[-1].set_xlabel("CBO Iteration", fontsize=13)
+    axes[0].set_title("Weight Posterior Evolution (starting from zero-mean prior)", fontsize=14)
+
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"Saved: {save_path}")
+
+
 def plot_shd_comparison(main_results: dict, uniform_results: dict,
                         random_results: dict, llm_results: dict,
                         save_path: str = "plots/baseline_comparison.png"):
@@ -227,6 +294,7 @@ def generate_all_plots(results_path: str):
     plot_posterior_evolution(all_results["main_cbo"])
     plot_entropy_reduction(all_results["main_cbo"])
     plot_eig_heatmap(all_results["main_cbo"])
+    plot_weight_posteriors(all_results["main_cbo"])
 
     if all_results.get("baseline_uniform_prior"):
         plot_shd_comparison(

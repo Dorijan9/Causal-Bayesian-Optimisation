@@ -90,6 +90,44 @@ def edge_precision_recall_f1(
     }
 
 
+def weight_rmse(weight_posteriors: dict, true_weights: dict) -> float:
+    """Root mean squared error between posterior mean weights and ground truth.
+
+    Args:
+        weight_posteriors: dict from GraphBelief.get_weight_posterior_summary()
+                           e.g. {"w_ED": {"mean": 0.72, ...}, ...}
+        true_weights: dict of ground-truth weights
+                      e.g. {"w_ED": 0.75, "w_DA": 0.8, ...}
+    """
+    errors = []
+    for edge_key, true_w in true_weights.items():
+        if edge_key in weight_posteriors:
+            errors.append((weight_posteriors[edge_key]["mean"] - true_w) ** 2)
+    if not errors:
+        return float("inf")
+    return float(np.sqrt(np.mean(errors)))
+
+
+def weight_coverage(weight_posteriors: dict, true_weights: dict) -> float:
+    """Fraction of true weights falling within 95% posterior credible intervals.
+
+    Args:
+        weight_posteriors: dict from GraphBelief.get_weight_posterior_summary()
+        true_weights: dict of ground-truth weights
+    """
+    covered = 0
+    total = 0
+    for edge_key, true_w in true_weights.items():
+        if edge_key in weight_posteriors:
+            total += 1
+            wp = weight_posteriors[edge_key]
+            if wp["lower_95"] <= true_w <= wp["upper_95"]:
+                covered += 1
+    if total == 0:
+        return 0.0
+    return float(covered / total)
+
+
 def evaluate_graph(adj_true: np.ndarray, adj_pred: np.ndarray) -> dict:
     """Full evaluation of a predicted graph against ground truth."""
     shd = structural_hamming_distance(adj_true, adj_pred)
@@ -97,6 +135,14 @@ def evaluate_graph(adj_true: np.ndarray, adj_pred: np.ndarray) -> dict:
     return {
         "shd": shd,
         **prf,
+    }
+
+
+def evaluate_weights(weight_posteriors: dict, true_weights: dict) -> dict:
+    """Evaluate weight recovery quality."""
+    return {
+        "weight_rmse": weight_rmse(weight_posteriors, true_weights),
+        "weight_coverage": weight_coverage(weight_posteriors, true_weights),
     }
 
 

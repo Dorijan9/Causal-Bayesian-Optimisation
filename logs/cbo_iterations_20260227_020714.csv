@@ -1,0 +1,2 @@
+iteration,target_variable,map_graph,map_probability,entropy_before,entropy_after,shd,precision,recall,f1
+1,E,G1,0.9999999999991913,1.5427868774950564,2.3327194256107862e-11,0,1.0,1.0,1.0

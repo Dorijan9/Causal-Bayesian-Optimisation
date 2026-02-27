@@ -1,5 +1,9 @@
 """
 Acquisition functions for intervention selection: Expected Information Gain (EIG).
+
+EIG computation now draws weights from the current weight posterior for each
+candidate graph when simulating interventional data, properly accounting for
+weight uncertainty.
 """
 
 import numpy as np
@@ -17,9 +21,15 @@ def expected_information_gain(scm: LinearGaussianSCM, belief: GraphBelief,
                                intervention_value: float = 2.0,
                                n_simulations: int = 500,
                                n_samples_per_sim: int = 50,
-                               sigma2: float = 0.3,
                                seed: Optional[int] = None) -> dict:
-    """Compute EIG for each possible intervention target."""
+    """Compute EIG for each possible intervention target.
+
+    For each candidate target:
+    1. For each simulation: sample a "true" graph from belief, draw weights
+       from that graph's posterior, simulate interventional data under the
+       ground-truth SCM, compute the resulting posterior entropy.
+    2. EIG = current_entropy - expected_posterior_entropy
+    """
     rng = np.random.default_rng(seed)
     current_ent = entropy(belief.belief)
     eig = {}
@@ -28,13 +38,17 @@ def expected_information_gain(scm: LinearGaussianSCM, belief: GraphBelief,
         post_ent_sum = 0.0
         for _ in range(n_simulations):
             s = rng.integers(0, 2**31)
-            sim_data = scm.sample_interventional(target, intervention_value, n_samples_per_sim, seed=s)
+            # Simulate data from ground-truth SCM
+            sim_data = scm.sample_interventional(target, intervention_value,
+                                                  n_samples_per_sim, seed=s)
 
+            # Compute marginal likelihood under each candidate graph
             log_liks = np.zeros(belief.K)
             for k in range(belief.K):
-                w = belief.estimate_weights(k, sim_data, target)
-                log_liks[k] = belief.compute_log_likelihood(k, sim_data, target, w, sigma2)
+                log_liks[k] = belief.compute_log_marginal_likelihood(
+                    k, sim_data, target)
 
+            # Simulated posterior
             log_p = log_liks + np.log(belief.belief + 1e-300)
             log_p -= log_p.max()
             p = np.exp(log_p)
@@ -50,11 +64,10 @@ def select_intervention(scm: LinearGaussianSCM, belief: GraphBelief,
                         intervention_value: float = 2.0,
                         n_simulations: int = 500,
                         n_samples_per_sim: int = 50,
-                        sigma2: float = 0.3,
                         seed: Optional[int] = None) -> tuple:
     """Select intervention target maximising EIG. Returns (target, scores)."""
-    scores = expected_information_gain(scm, belief, intervention_value, n_simulations,
-                                       n_samples_per_sim, sigma2, seed)
+    scores = expected_information_gain(scm, belief, intervention_value,
+                                       n_simulations, n_samples_per_sim, seed)
     best = max(scores, key=scores.get)
     return best, scores
 
@@ -66,7 +79,7 @@ def random_intervention(scm: LinearGaussianSCM, seed: Optional[int] = None) -> s
 
 if __name__ == "__main__":
     scm = LinearGaussianSCM()
-    belief = GraphBelief(tau=3.0)
+    belief = GraphBelief(tau=3.0, sigma_w2=0.5, sigma_eps2=0.3)
     print(f"Current entropy: {entropy(belief.belief):.4f}")
     best, scores = select_intervention(scm, belief, n_simulations=100, seed=42)
     print("EIG scores:")

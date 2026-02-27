@@ -1,8 +1,8 @@
 {
   "random_seed": 42,
   "scm": {
-    "noise_variance": 0.3,
-    "weights": {
+    "observation_noise_variance": 0.3,
+    "ground_truth_weights": {
       "w_ED": 0.75,
       "w_DA": 0.8,
       "w_AB": 0.7,
@@ -12,9 +12,13 @@
     "root_variance": 1.0,
     "intervention_value": 2.0,
     "n_observational_samples": 200,
-    "n_interventional_samples_per_iter": 50
+    "n_interventional_samples_per_iter": 10
   },
-  "prior": {
+  "weight_prior": {
+    "mean": 0.0,
+    "variance": 0.5
+  },
+  "graph_prior": {
     "temperature_tau": 3.0
   },
   "cbo": {
@@ -45,7 +49,9 @@
       "entropy_reduction",
       "edge_precision",
       "edge_recall",
-      "edge_f1"
+      "edge_f1",
+      "weight_rmse",
+      "weight_coverage"
     ],
     "n_experiment_repeats": 100
   },
